@@ -1,0 +1,42 @@
+{
+  "name": "qimofuxi-backend",
+  "version": "1.0.0",
+  "description": "期末复习平台后端API服务",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "jest",
+    "test:playwright": "playwright test",
+    "test:api": "playwright test tests/api/",
+    "test:report": "playwright show-report",
+    "test:cleanup": "node cleanup-tests.js"
+  },
+  "keywords": [
+    "express",
+    "sqlite",
+    "api",
+    "education"
+  ],
+  "author": "Alex",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.11.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.2.1",
+    "helmet": "^7.1.0",
+    "sql.js": "^1.13.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.1",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2",
+    "playwright": "^1.54.1",
+    "supertest": "^6.3.3"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
