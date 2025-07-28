@@ -41,3 +41,49 @@ export interface CreateSubjectResponse {
   timestamp: string
   requestId: string
 }
+
+// 组件相关类型定义
+export interface SubjectCardProps {
+  subject: Subject
+}
+
+export interface SubjectCardEmits {
+  click: [subject: Subject]
+  edit: [subject: Subject]
+  delete: [subject: Subject]
+}
+
+export interface CreateSubjectModalProps {
+  open: boolean
+}
+
+export interface CreateSubjectModalEmits {
+  'update:open': [value: boolean]
+  'success': [subject: Subject]
+  'cancel': []
+}
+
+export interface SubjectManagerState {
+  subjects: Subject[]
+  loading: boolean
+  searchKeyword: string
+  viewMode: 'grid' | 'list'
+}
+
+// 表格列定义
+export interface SubjectTableColumn {
+  title: string
+  key: string
+  dataIndex?: string
+  width?: number
+}
+
+// 视图模式类型
+export type ViewMode = 'grid' | 'list'
+
+// 排序类型
+export interface SortOption {
+  key: keyof Subject
+  order: 'asc' | 'desc'
+  label: string
+}
