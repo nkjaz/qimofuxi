@@ -1,76 +1,94 @@
 # 前端开发指南
 
 ## 文档信息
-- **版本**: v1.0.0
+- **版本**: v1.1.0
 - **最后更新**: 2025-01-28
 - **维护者**: Alex (工程师)
-- **状态**: 开发中
+- **状态**: 基础框架已完成
 
 ## 项目概述
-期末复习平台前端应用开发指南，提供现代化、响应式的用户界面和优秀的用户体验。
+期末复习平台前端应用，基于Vue3 + TypeScript + Vben Admin构建，提供现代化、响应式的用户界面和优秀的用户体验。
 
 ## 技术栈
 
 ### 核心框架
-- **前端框架**: React 18+ / Vue 3+
-- **构建工具**: Vite / Create React App
-- **路由管理**: React Router / Vue Router
-- **状态管理**: Redux Toolkit / Pinia
-- **UI组件库**: Ant Design / Element Plus
-- **样式方案**: Tailwind CSS / Styled Components
+- **前端框架**: Vue 3.x (Composition API)
+- **构建工具**: Vite 5.x
+- **路由管理**: Vue Router 4.x
+- **状态管理**: Pinia
+- **UI组件库**: Ant Design Vue 4.x
+- **样式方案**: UnoCSS (原子化CSS)
+- **管理模板**: Vben Admin
 
 ### 开发工具
-- **包管理器**: npm / yarn / pnpm
+- **包管理器**: npm
 - **代码规范**: ESLint + Prettier
-- **类型检查**: TypeScript
-- **测试框架**: Jest + React Testing Library
+- **类型检查**: TypeScript 5.x
+- **自动导入**: unplugin-auto-import + unplugin-vue-components
 - **端到端测试**: Playwright (强制使用)
 - **版本控制**: Git
+- **HTTP客户端**: Axios
 
 ## 项目结构
 
 ```
-src/
-├── components/          # 可复用组件
-│   ├── common/         # 通用组件
-│   ├── forms/          # 表单组件
-│   └── layout/         # 布局组件
-├── pages/              # 页面组件
-│   ├── auth/           # 认证相关页面
-│   ├── dashboard/      # 仪表盘页面
-│   ├── materials/      # 复习材料页面
-│   └── profile/        # 用户资料页面
-├── hooks/              # 自定义Hook
-├── services/           # API服务
-├── store/              # 状态管理
-├── utils/              # 工具函数
-├── styles/             # 样式文件
-├── types/              # TypeScript类型定义
-├── constants/          # 常量定义
-└── assets/             # 静态资源
+frontend/
+├── public/                 # 静态资源
+├── src/
+│   ├── api/               # API接口层
+│   │   ├── index.ts       # Axios配置和拦截器
+│   │   └── subject.ts     # 学科相关API
+│   ├── components/        # 通用组件
+│   ├── router/           # 路由配置
+│   │   └── index.ts      # 路由定义和守卫
+│   ├── stores/           # Pinia状态管理
+│   │   └── subject.ts    # 学科状态管理
+│   ├── styles/           # 全局样式
+│   │   └── index.css     # 全局CSS样式
+│   ├── types/            # TypeScript类型定义
+│   │   └── subject.ts    # 学科相关类型
+│   ├── utils/            # 工具函数
+│   ├── views/            # 页面组件
+│   │   ├── Home.vue      # 首页
+│   │   ├── 404.vue       # 404页面
+│   │   └── subjects/     # 学科管理页面
+│   │       ├── index.vue # 学科列表
+│   │       ├── create.vue# 创建学科
+│   │       └── detail.vue# 学科详情
+│   ├── App.vue           # 根组件
+│   └── main.ts           # 应用入口
+├── index.html            # HTML模板
+├── package.json          # 项目配置
+├── tsconfig.json         # TypeScript配置
+├── vite.config.ts        # Vite配置
+├── uno.config.ts         # UnoCSS配置
+├── .eslintrc.js          # ESLint配置
+├── .prettierrc           # Prettier配置
+├── auto-imports.d.ts     # 自动导入类型声明
+└── .eslintrc-auto-import.json # ESLint自动导入配置
 ```
 
 ## 核心功能模块
 
-### 用户认证模块
-- 用户登录/注册
-- 密码重置
-- 会话管理
-- 权限控制
+### 学科管理模块 (已实现)
+- 学科列表展示
+- 学科创建功能
+- 学科详情查看
+- 学科信息编辑
 
-### 复习材料模块
+### 复习材料模块 (待开发)
 - 材料列表展示
 - 材料详情查看
 - 材料搜索过滤
 - 材料收藏管理
 
-### 学习进度模块
+### 学习进度模块 (待开发)
 - 进度可视化
 - 学习统计
 - 学习计划
 - 成就系统
 
-### 用户中心模块
+### 用户中心模块 (待开发)
 - 个人信息管理
 - 学习偏好设置
 - 通知设置
@@ -79,42 +97,47 @@ src/
 ## 开发规范
 
 ### 组件开发规范
-- 使用函数式组件和Hooks
+- 使用Vue3 Composition API
 - 组件名称使用PascalCase
-- 文件名与组件名保持一致
-- 每个组件单独一个文件夹
+- 文件名使用kebab-case
+- 单文件组件(.vue)格式
+- 使用`<script setup>`语法糖
 
 ### 代码风格规范
-- 使用TypeScript进行类型检查
+- 使用TypeScript进行严格类型检查
 - 遵循ESLint和Prettier配置
 - 使用语义化的变量和函数命名
 - 添加必要的代码注释
+- 自动导入Vue API和组件
 
 ### 状态管理规范
-- 全局状态使用Redux/Pinia
-- 组件内部状态使用useState
-- 异步状态使用专门的Hook
+- 全局状态使用Pinia
+- 组件内部状态使用ref/reactive
+- 异步状态使用专门的composable
 - 避免过度使用全局状态
+- 使用storeToRefs解构响应式数据
 
 ### API调用规范
-- 统一的API服务封装
+- 统一的Axios服务封装
 - 错误处理和重试机制
 - 请求和响应拦截器
 - 加载状态管理
+- 统一的API响应格式
 
 ## 样式开发指南
 
 ### 设计系统
+- 基于Ant Design Vue的设计规范
+- UnoCSS原子化CSS类
 - 统一的颜色规范
-- 标准化的字体大小
-- 一致的间距系统
-- 响应式断点设置
+- 标准化的字体大小和间距
 
 ### CSS规范
-- 使用CSS Modules或Styled Components
+- 优先使用UnoCSS原子类
+- 组件内使用scoped样式
 - 避免全局样式污染
-- 移动端优先的响应式设计
-- 深色模式支持
+- 响应式设计支持
+- 支持深色模式切换
 
 ## 性能优化
 
@@ -125,10 +148,10 @@ src/
 - 动态导入优化
 
 ### 渲染优化
-- 使用React.memo优化重渲染
-- 合理使用useMemo和useCallback
+- 使用v-memo优化重渲染
+- 合理使用computed和watchEffect
 - 虚拟滚动处理大列表
-- 图片懒加载
+- 图片懒加载和组件懒加载
 
 ### 缓存策略
 - HTTP缓存配置
@@ -141,14 +164,14 @@ src/
 ### 单元测试
 - 组件测试覆盖率 > 80%
 - 工具函数100%覆盖
-- 使用Jest + Testing Library
+- 使用Vitest + Vue Test Utils
 - Mock外部依赖
 
 ### 集成测试
 - 页面级别的集成测试
 - API集成测试
-- 状态管理测试
-- 路由测试
+- Pinia状态管理测试
+- Vue Router路由测试
 
 ### 端到端测试 (Playwright - 强制使用)
 - 关键用户流程测试
@@ -198,7 +221,67 @@ src/
 - 第三方库兼容
 - Polyfill配置
 
+## 开发环境配置
+
+### 本地开发
+```bash
+# 安装依赖
+npm install
+
+# 启动开发服务器 (端口3000)
+npm run dev
+
+# 类型检查
+npm run type-check
+
+# 代码格式化
+npm run format
+
+# 代码检查
+npm run lint
+```
+
+### 环境变量
+- `VITE_API_BASE_URL`: API基础URL (默认: http://localhost:3001)
+- `VITE_APP_TITLE`: 应用标题
+
+### 代理配置
+开发环境下，前端(3000端口)通过Vite代理转发API请求到后端(3001端口)
+
+## 已实现功能
+
+### 基础框架 ✅
+- Vue3 + TypeScript + Vben Admin基础框架
+- Vite构建配置和开发服务器
+- UnoCSS原子化CSS框架
+- Ant Design Vue UI组件库
+- 自动导入配置(API和组件)
+
+### 路由系统 ✅
+- Vue Router 4配置
+- 路由守卫和页面标题设置
+- 404错误页面处理
+
+### 状态管理 ✅
+- Pinia状态管理配置
+- 学科管理store实现
+- 响应式数据处理
+
+### API服务 ✅
+- Axios HTTP客户端配置
+- 请求/响应拦截器
+- 统一错误处理
+- 学科管理API接口
+
+### 页面组件 ✅
+- 首页展示和导航
+- 学科列表页面
+- 学科创建页面
+- 学科详情页面
+
 ## 更新日志
+- 2025-01-28: 完成Vue3 + TypeScript + Vben Admin基础框架搭建
+- 2025-01-28: 实现学科管理功能和前后端数据联调
 - 2025-01-28: 创建前端开发指南模板
 
 ---
