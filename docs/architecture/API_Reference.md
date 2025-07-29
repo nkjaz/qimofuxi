@@ -56,7 +56,7 @@
 #### 文件上传 ✅
 - **端点**: `POST /api/subjects/:id/upload`
 - **描述**: 上传Markdown文件到指定学科
-- **状态**: 已实现
+- **状态**: 已实现并优化 (v0.9.3)
 - **请求格式**: multipart/form-data
 - **参数**:
   - id: 学科ID（路径参数，整数）
@@ -65,25 +65,31 @@
   - 类型: .md, .markdown
   - 大小: 最大10MB
   - 编码: UTF-8
-- **响应示例**:
+- **响应示例** (v0.9.3优化):
 ```json
 {
   "success": true,
   "message": "文件上传成功",
   "data": {
-    "id": 1,
-    "name": "example_1640995200000.md",
-    "originalName": "example.md",
-    "size": 1024,
-    "mimeType": "text/markdown",
-    "subjectId": 1,
-    "uploadTime": "2025-01-29T10:00:00.000Z"
+    "id": 9,
+    "name": "test_ui_upload_1753770828146.md",
+    "originalName": "test_ui_upload.md",
+    "size": 500,
+    "mimeType": "application/octet-stream",
+    "subjectId": 108,
+    "uploadTime": "2025-07-29T06:33:48.156Z"
   },
-  "timestamp": "2025-01-29T10:00:00.000Z",
-  "requestId": "req-123",
-  "responseTime": "150ms"
+  "timestamp": "2025-07-29T06:33:48.156Z",
+  "requestId": "req-upload-9",
+  "responseTime": "145ms"
 }
 ```
+
+**v0.9.3 API优化说明**:
+- **响应数据结构优化**: 确保文件ID正确返回，支持前端自动跳转到文件详情页
+- **错误处理增强**: 提供更详细的错误信息，便于前端调试和用户反馈
+- **性能监控**: 添加响应时间监控，优化大文件上传性能
+- **数据一致性**: 确保文件上传后立即可通过GET /api/files/:fileId访问
 
 #### 文件内容获取 ✅
 - **端点**: `GET /api/files/:fileId`
@@ -366,6 +372,70 @@ npx playwright test tests/api/files.test.js --debug
 - 配置文件: `backend/playwright.config.js`
 - 测试报告: `backend/playwright-report/`
 
+## 前端集成指南 ✅
+
+### FileUploader组件集成
+前端已实现完整的文件上传组件，位于`frontend/src/components/FileUploader.vue`：
+
+#### 组件使用示例
+```vue
+<template>
+  <FileUploader
+    :subject-id="subjectId"
+    @upload-success="handleUploadSuccess"
+    @upload-error="handleUploadError"
+  />
+</template>
+
+<script setup lang="ts">
+import { FileUploader } from '@/components'
+import type { FileNode } from '@/types'
+
+const handleUploadSuccess = (file: FileNode) => {
+  console.log('文件上传成功:', file)
+}
+
+const handleUploadError = (error: string) => {
+  console.error('文件上传失败:', error)
+}
+</script>
+```
+
+#### API调用封装
+前端API调用已封装在`frontend/src/api/file.ts`：
+
+```typescript
+export const fileApi = {
+  // 上传文件
+  async uploadFile(subjectId: number, file: File) {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    return api.post(`/subjects/${subjectId}/upload`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+  },
+
+  // 获取文件内容
+  async getFileContent(fileId: number) {
+    return api.get(`/files/${fileId}/content`)
+  },
+
+  // 获取文件信息
+  async getFileInfo(fileId: number) {
+    return api.get(`/files/${fileId}`)
+  }
+}
+```
+
+#### 集成特性
+- ✅ 支持拖拽和点击上传
+- ✅ 实时上传进度显示
+- ✅ 文件类型和大小验证
+- ✅ 友好的错误处理和状态反馈
+- ✅ 响应式设计适配各种屏幕尺寸
+- ✅ 与Ant Design Vue设计系统一致
+
 ### 计划实现错误代码
 | 错误代码 | HTTP状态码 | 描述 | 状态 |
 |---------|-----------|------|------|
@@ -373,6 +443,7 @@ npx playwright test tests/api/files.test.js --debug
 | 1003 | 403 | 权限不足 | 待实现 |
 
 ## 更新日志
+- 2025-07-29: 添加前端FileUploader组件集成指南和API调用封装
 - 2025-07-28: 完成学科管理API文档，添加健康检查和错误处理规范
 - 2025-01-28: 创建API文档模板框架
 

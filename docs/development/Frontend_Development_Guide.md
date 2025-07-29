@@ -1,10 +1,10 @@
 # 前端开发指南
 
 ## 文档信息
-- **版本**: v1.1.0
-- **最后更新**: 2025-01-28
+- **版本**: v1.2.0
+- **最后更新**: 2025-07-29
 - **维护者**: Alex (工程师)
-- **状态**: 基础框架已完成
+- **状态**: 核心功能已完成 - 学科管理组件、文件上传组件已完成并集成
 
 ## 项目概述
 期末复习平台前端应用，基于Vue3 + TypeScript + Vben Admin构建，提供现代化、响应式的用户界面和优秀的用户体验。
@@ -37,8 +37,14 @@ frontend/
 ├── src/
 │   ├── api/               # API接口层
 │   │   ├── index.ts       # Axios配置和拦截器
-│   │   └── subject.ts     # 学科相关API
+│   │   ├── subject.ts     # 学科相关API
+│   │   └── file.ts        # 文件管理API
 │   ├── components/        # 通用组件
+│   │   ├── SubjectCard.vue      # 学科卡片组件
+│   │   ├── CreateSubjectModal.vue # 创建学科模态框
+│   │   ├── SubjectManager.vue   # 学科管理组件
+│   │   ├── FileUploader.vue     # 文件上传组件
+│   │   └── index.ts            # 组件导出
 │   ├── router/           # 路由配置
 │   │   └── index.ts      # 路由定义和守卫
 │   ├── stores/           # Pinia状态管理
@@ -46,7 +52,9 @@ frontend/
 │   ├── styles/           # 全局样式
 │   │   └── index.css     # 全局CSS样式
 │   ├── types/            # TypeScript类型定义
-│   │   └── subject.ts    # 学科相关类型
+│   │   ├── index.ts      # 通用类型导出
+│   │   ├── subject.ts    # 学科相关类型
+│   │   └── file.ts       # 文件相关类型
 │   ├── utils/            # 工具函数
 │   ├── views/            # 页面组件
 │   │   ├── Home.vue      # 首页
@@ -102,6 +110,52 @@ frontend/
 - 文件名使用kebab-case
 - 单文件组件(.vue)格式
 - 使用`<script setup>`语法糖
+
+#### 文件上传组件规范
+基于FileUploader.vue组件的最佳实践：
+
+**Props设计原则**:
+```typescript
+interface FileUploaderProps {
+  subjectId: number      // 必需参数，明确业务关联
+  accept?: string        // 可选参数，提供默认值
+  maxSize?: number       // 可选参数，合理的默认限制
+  disabled?: boolean     // 状态控制参数
+}
+```
+
+**Events设计原则**:
+```typescript
+interface FileUploaderEmits {
+  uploadStart: []                    // 无参数事件
+  uploadProgress: [progress: number] // 单参数事件
+  uploadSuccess: [file: FileNode]    // 复杂对象事件
+  uploadError: [error: string]       // 错误信息事件
+}
+```
+
+**状态管理模式**:
+- 使用明确的状态枚举：`'idle' | 'uploading' | 'success' | 'error'`
+- 状态转换清晰：idle → uploading → success/error
+- 提供状态重置机制
+- 错误状态可恢复
+
+**用户体验要求**:
+- 支持拖拽和点击两种交互方式
+- **新增明确的"选择文件上传"按钮**，解决用户找不到上传入口的问题
+- **优化上传流程**：选择文件 → 显示文件信息 → 确认上传 → 自动跳转
+- **文件预览功能**：选择文件后显示文件名、大小等关键信息
+- **双重确认机制**：提供"确认上传"和"取消"按钮，提升用户控制感
+- 提供实时进度反馈和状态指示
+- 友好的错误提示信息和恢复机制
+- 响应式设计适配各种屏幕尺寸，移动端友好
+- 与Ant Design Vue保持视觉一致性
+
+**UI设计原则** (v0.9.3更新):
+- **按钮层次化设计**：主要操作使用primary按钮，次要操作使用default按钮
+- **视觉引导**：通过颜色、大小、图标引导用户操作流程
+- **状态反馈**：每个操作都有明确的视觉反馈和状态提示
+- **容错设计**：允许用户取消操作，提供重试机制
 
 ### 代码风格规范
 - 使用TypeScript进行严格类型检查
@@ -171,6 +225,7 @@ export default api
 
 ### API服务层实现
 
+#### 学科管理API
 学科管理API服务位于`src/api/subject.ts`，提供完整的CRUD操作：
 
 ```typescript
@@ -194,6 +249,45 @@ export const subjectApi = {
   }
 }
 ```
+
+#### 文件管理API
+文件管理API服务位于`src/api/file.ts`，提供文件上传和获取功能：
+
+```typescript
+import api from './index'
+import type { ApiResponse, FileNode, UploadFileResponse, FileContentResponse } from '@/types'
+
+export const fileApi = {
+  // 上传文件到指定学科
+  async uploadFile(subjectId: number, file: File): Promise<ApiResponse<UploadFileResponse>> {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    return api.post(`/subjects/${subjectId}/upload`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  },
+
+  // 根据文件ID获取文件内容
+  async getFileContent(fileId: number): Promise<ApiResponse<FileContentResponse>> {
+    return api.get(`/files/${fileId}/content`)
+  },
+
+  // 根据文件ID获取文件信息
+  async getFileInfo(fileId: number): Promise<ApiResponse<FileNode>> {
+    return api.get(`/files/${fileId}`)
+  }
+}
+```
+
+**文件上传最佳实践**:
+- 使用FormData格式传输文件
+- 设置正确的Content-Type头部
+- 实现上传进度监控
+- 处理文件大小和类型验证
+- 提供友好的错误处理
 
 ### 状态管理集成
 
