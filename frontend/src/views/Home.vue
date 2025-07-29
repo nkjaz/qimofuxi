@@ -11,6 +11,7 @@
             <router-link
               to="/subjects"
               class="btn-primary"
+              data-testid="subjects-link"
             >
               学科管理
             </router-link>
@@ -41,7 +42,7 @@
           <p class="text-body mb-4">
             创建和管理不同学科分类，为复习资料提供清晰的组织结构。
           </p>
-          <router-link to="/subjects" class="btn-primary">
+          <router-link to="/subjects" class="btn-primary" data-testid="start-manage-link">
             开始管理
           </router-link>
         </div>

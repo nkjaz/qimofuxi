@@ -9,6 +9,7 @@ const path = require('path');
 
 // 导入路由
 const subjectsRouter = require('./routes/subjects');
+const filesRouter = require('./routes/files');
 
 // 导入中间件
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
@@ -40,8 +41,8 @@ app.use(cors({
 
 // 请求限制
 const limiter = rateLimit({
-    windowMs: process.env.NODE_ENV === 'test' ? 1000 : 15 * 60 * 1000, // 测试环境1秒，生产环境15分钟
-    max: process.env.NODE_ENV === 'test' ? 1000 : 100, // 测试环境1000个请求，生产环境100个请求
+    windowMs: process.env.NODE_ENV === 'production' ? 15 * 60 * 1000 : 1000, // 生产环境15分钟，其他环境1秒
+    max: process.env.NODE_ENV === 'production' ? 100 : 1000, // 生产环境100个请求，其他环境1000个请求
     message: {
         success: false,
         message: '请求过于频繁，请稍后再试',
@@ -72,6 +73,7 @@ app.get('/health', (req, res) => {
 
 // API路由
 app.use('/api/subjects', subjectsRouter);
+app.use('/api', filesRouter);
 
 // 404处理
 app.use(notFoundHandler);
@@ -86,6 +88,8 @@ if (require.main === module) {
         console.log(`📍 服务地址: http://localhost:${PORT}`);
         console.log(`🏥 健康检查: http://localhost:${PORT}/health`);
         console.log(`📚 学科API: http://localhost:${PORT}/api/subjects`);
+        console.log(`📤 文件上传: http://localhost:${PORT}/api/subjects/:id/upload`);
+        console.log(`📄 文件获取: http://localhost:${PORT}/api/files/:fileId`);
         console.log(`⏰ 启动时间: ${new Date().toISOString()}`);
     });
 }

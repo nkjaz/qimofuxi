@@ -8,6 +8,9 @@ const path = require('path');
 // 数据库文件路径
 const DB_PATH = path.join(__dirname, '../../data/database.sqlite');
 
+// 迁移文件目录路径
+const MIGRATIONS_PATH = path.join(__dirname, '../../data/migrations');
+
 // 创建数据库连接
 let db = null;
 let SQL = null;
@@ -145,11 +148,74 @@ process.on('SIGTERM', async () => {
     process.exit(0);
 });
 
+// 运行数据库迁移
+const runMigrations = async () => {
+    try {
+        const database = await getDatabase();
+
+        // 创建迁移记录表
+        database.run(`
+            CREATE TABLE IF NOT EXISTS migrations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                filename VARCHAR(255) NOT NULL UNIQUE,
+                executed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        // 获取已执行的迁移
+        const executedMigrations = database.exec('SELECT filename FROM migrations');
+        const executedFiles = executedMigrations.length > 0 && executedMigrations[0].values
+            ? executedMigrations[0].values.map(row => row[0])
+            : [];
+
+        // 读取迁移文件
+        if (!fs.existsSync(MIGRATIONS_PATH)) {
+            console.log('⚠️ 迁移目录不存在，跳过迁移');
+            return;
+        }
+
+        const migrationFiles = fs.readdirSync(MIGRATIONS_PATH)
+            .filter(file => file.endsWith('.sql'))
+            .sort(); // 按文件名排序确保执行顺序
+
+        console.log(`📋 发现 ${migrationFiles.length} 个迁移文件`);
+
+        // 执行未运行的迁移
+        for (const filename of migrationFiles) {
+            if (!executedFiles.includes(filename)) {
+                console.log(`🔄 执行迁移: ${filename}`);
+
+                const migrationPath = path.join(MIGRATIONS_PATH, filename);
+                const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
+
+                // 执行迁移SQL
+                database.exec(migrationSQL);
+
+                // 记录迁移执行
+                database.run('INSERT INTO migrations (filename) VALUES (?)', [filename]);
+
+                console.log(`✅ 迁移完成: ${filename}`);
+            } else {
+                console.log(`⏭️ 跳过已执行的迁移: ${filename}`);
+            }
+        }
+
+        // 保存数据库
+        saveDatabase();
+        console.log('✅ 所有迁移执行完成');
+
+    } catch (error) {
+        console.error('❌ 迁移执行失败:', error.message);
+        throw error;
+    }
+};
+
 module.exports = {
     initDatabase,
     getDatabase,
     closeDatabase,
     checkDatabaseHealth,
     executeTransaction,
-    saveDatabase
+    saveDatabase,
+    runMigrations
 };

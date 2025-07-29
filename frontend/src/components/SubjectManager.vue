@@ -8,7 +8,7 @@
           <div>
             <h1 class="text-2xl font-bold text-gray-900">学科管理</h1>
             <p class="text-gray-600 text-sm mt-1">
-              管理和组织您的学科分类，共 {{ subjects.length }} 个学科
+              管理和组织您的学科分类，共 <span data-testid="subject-count">{{ subjects.length }}</span> 个学科
             </p>
           </div>
         </div>
@@ -20,30 +20,32 @@
             v-model:value="searchKeyword"
             placeholder="搜索学科名称..."
             style="width: 200px"
+            data-testid="search-input"
             @search="handleSearch"
             @change="handleSearchChange"
           />
           
           <!-- 视图切换 -->
           <a-radio-group v-model:value="viewMode" button-style="solid" size="small">
-            <a-radio-button value="grid">
+            <a-radio-button value="grid" data-testid="view-toggle-grid">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
               </svg>
             </a-radio-button>
-            <a-radio-button value="list">
+            <a-radio-button value="list" data-testid="view-toggle-list">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M4 6h16M4 10h16M4 14h16M4 18h16" />
               </svg>
             </a-radio-button>
           </a-radio-group>
 
           <!-- 创建按钮 -->
-          <a-button 
-            type="primary" 
+          <a-button
+            type="primary"
             size="large"
+            data-testid="create-subject-button"
             @click="showCreateModal"
             :icon="h(PlusOutlined)"
           >
@@ -86,10 +88,10 @@
       </div>
 
       <!-- 学科列表 -->
-      <div v-else>
+      <div v-else data-testid="subject-list-container">
         <!-- 网格视图 -->
-        <div 
-          v-if="viewMode === 'grid'" 
+        <div
+          v-if="viewMode === 'grid'"
           class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         >
           <SubjectCard

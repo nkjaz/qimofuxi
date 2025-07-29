@@ -1,12 +1,13 @@
 <template>
-  <div 
+  <div
     class="subject-card bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer border border-gray-200"
+    data-testid="subject-card"
     @click="handleClick"
   >
     <div class="p-6">
       <!-- 学科标题 -->
       <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-semibold text-gray-900 truncate">
+        <h3 class="text-lg font-semibold text-gray-900 truncate" data-testid="subject-card-title">
           {{ subject.name }}
         </h3>
         <div class="flex items-center space-x-2">
@@ -18,7 +19,7 @@
       </div>
 
       <!-- 学科描述 -->
-      <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+      <p class="text-gray-600 text-sm mb-4 line-clamp-2" data-testid="subject-card-description">
         {{ subject.description || '暂无描述' }}
       </p>
 
@@ -46,9 +47,10 @@
 
         <!-- 操作按钮 -->
         <div class="flex items-center space-x-2">
-          <button 
+          <button
             @click.stop="handleEdit"
             class="text-blue-500 hover:text-blue-700 transition-colors"
+            data-testid="subject-card-edit"
             title="编辑学科"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,9 +59,10 @@
             </svg>
           </button>
           
-          <button 
+          <button
             @click.stop="handleDelete"
             class="text-red-500 hover:text-red-700 transition-colors"
+            data-testid="subject-card-delete"
             title="删除学科"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

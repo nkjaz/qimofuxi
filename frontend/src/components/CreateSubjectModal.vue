@@ -4,16 +4,18 @@
     title="创建新学科"
     :confirm-loading="loading"
     :width="600"
+    data-testid="create-subject-modal"
     @ok="handleSubmit"
     @cancel="handleCancel"
   >
     <template #footer>
-      <a-button @click="handleCancel">取消</a-button>
-      <a-button 
-        type="primary" 
+      <a-button @click="handleCancel" data-testid="cancel-button">取消</a-button>
+      <a-button
+        type="primary"
         :loading="loading"
         @click="handleSubmit"
         :disabled="!isFormValid"
+        data-testid="submit-button"
       >
         创建学科
       </a-button>
@@ -38,6 +40,7 @@
           :maxlength="50"
           show-count
           size="large"
+          data-testid="name-input"
           @blur="validateField('name')"
         />
         <div class="text-xs text-gray-500 mt-1">
@@ -56,6 +59,7 @@
           :rows="4"
           :maxlength="200"
           show-count
+          data-testid="description-input"
           @blur="validateField('description')"
         />
         <div class="text-xs text-gray-500 mt-1">
@@ -64,11 +68,11 @@
       </a-form-item>
 
       <!-- 预览区域 -->
-      <div v-if="formData.name" class="bg-gray-50 p-4 rounded-lg border">
+      <div v-if="formData.name" class="bg-gray-50 p-4 rounded-lg border" data-testid="preview-section">
         <h4 class="text-sm font-medium text-gray-700 mb-2">预览效果</h4>
         <div class="bg-white p-3 rounded border shadow-sm">
-          <h3 class="font-semibold text-gray-900">{{ formData.name }}</h3>
-          <p class="text-gray-600 text-sm mt-1">
+          <h3 class="font-semibold text-gray-900" data-testid="preview-name">{{ formData.name }}</h3>
+          <p class="text-gray-600 text-sm mt-1" data-testid="preview-description">
             {{ formData.description || '暂无描述' }}
           </p>
           <div class="text-xs text-gray-500 mt-2">
